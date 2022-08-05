@@ -1,0 +1,8 @@
+<launch>
+  <node pkg="tfmini_ros_tiers" type="tfmini_ros_node2" name="tfmini_ros_node2">
+    <param name="serial_port" type="string" value="/dev/ttyUSB1" />
+    <param name="baud_rate" type="int" value="115200" />
+  </node>
+  
+  <node pkg="tf" type="static_transform_publisher" name="broadcasterTFmini2" args="0 0 0 0 0 0 base_link TFmini22 100" />
+</launch>
