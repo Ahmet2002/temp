@@ -38,12 +38,8 @@ catkin_package(
 # add_dependencies(TFmini_ros ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
- add_executable(tfmini_ros_node1 
-   src/TFmini_ros_node1.cpp
-   src/TFmini.cpp
- )
- add_executable(tfmini_ros_node2 
-   src/TFmini_ros_node2.cpp
+ add_executable(tfmini_ros_node 
+   src/TFmini_ros_node.cpp
    src/TFmini.cpp
  )
 
@@ -52,11 +48,7 @@ catkin_package(
 # add_dependencies(TFmini_ros_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(tfmini_ros_node1
-   ${catkin_LIBRARIES}
- )
-
- target_link_libraries(tfmini_ros_node2
+ target_link_libraries(tfmini_ros_node
    ${catkin_LIBRARIES}
  )
  
@@ -76,7 +68,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11")
 # )
 
 ## Mark executables and/or libraries for installation
- install(TARGETS tfmini_ros_node1 tfmini_ros_node1 tfmini_ros_node2  tfmini_ros_node2
+ install(TARGETS tfmini_ros_node tfmini_ros_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -91,8 +83,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11")
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
  install(FILES
-  launch/tfmini1.launch
-  launch/tfmini2.launch
+  launch/tfmini.launch
 #   # myfile1
 #   # myfile2
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
