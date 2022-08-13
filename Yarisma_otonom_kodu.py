@@ -225,7 +225,7 @@ position_array_T = [[iki_harf_arasi_bosluk,0, 0],
 
 position_array_U = [[iki_harf_arasi_bosluk,0, 0],
                     [0, font, 1],
-                    [font/2, 0, 1],
+                    [font, 0, 1],
                     [0, -font, 1]]
 
 
@@ -459,6 +459,7 @@ for i in yazi:
             sayac += 1
 
 arm_ol_ve_yuksel(takeoff)
+time.sleep(10)
 print(konum_array)
 ekstra_time=2
 def konuma_gitme():
@@ -469,6 +470,7 @@ def konuma_gitme():
         konum=LocationGlobalRelative(konum_array[i][0],konum_array[i][1],konum_array[i][2])
         if(konum_array[i][3]==1):
             nozzle_on()
+        time.sleep(1)
         iha.simple_goto(konum)
         if(konum_array[i][2]==konum_array[i][2]):
             wait_time = math.ceil(mesafe * 100 / copter_horizontal_velocity)

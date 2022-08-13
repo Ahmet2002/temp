@@ -17,54 +17,23 @@ yazi=input("Lutfen bir kelime giriniz: ")
 takeoff=5
 sayac=0
 iki_harf_arasi_bosluk=0.5
-
 yaw=iha.heading
 aci=yaw+90
 if(aci>360):
     aci=aci-360
 
-
-def distance_control(hedef_array):
-    guncel_array = [iha.location.global_relative_frame.lat, iha.location.global_relative_frame.lon,iha.location.global_relative_frame.alt]
-    targetDistance=iki_nokta_arasi_uzaklik_hesaplama_3d(guncel_array,hedef_array)
-    while iha.mode == "GUIDED":
-        guncel_array = [iha.location.global_relative_frame.lat, iha.location.global_relative_frame.lon,iha.location.global_relative_frame.alt]
-        remainingDistance = iki_nokta_arasi_uzaklik_hesaplama_3d(guncel_array,hedef_array)
-        print("Hedefe kalan uzaklik: ", remainingDistance)
-        if remainingDistance <= targetDistance * 0.2:  # Just below target, in case of undershoot.
-            print("Hedefe ulasti.")
-            print(iha.location.global_relative_frame)
-            break
 def nozzle_on():
     GPIO.output(33,GPIO.HIGH)
+    print("nozzle açık")
 def nozzle_off():
     GPIO.output(33,GPIO.LOW)
+    print("nozzle kapalı")
 
-def arm_ol_yuksel_ve_kontrolu_ver(hedef_yukseklik):
+def kodu_baslat():
     iha.mode = VehicleMode("GUIDED")
     while iha.mode != 'GUIDED':
         print('Guided moduna gecis yapiliyor')
         time.sleep(1.5)
-
-    print("Guided moduna gecis yapildi")
-    iha.armed = True
-    time.sleep(3)
-
-    print("Ihamiz arm olmustur")
-    iha.simple_takeoff(hedef_yukseklik)
-    while iha.location.global_relative_frame.alt <= hedef_yukseklik * 0.9:
-        print("Su anki yukseklik{}".format(iha.location.global_relative_frame.alt))
-        time.sleep(0.5)
-    print("Takeoff gerceklesti")
-    i=0
-    while iha.mode != 'LOITER':
-        time.sleep(1)
-        i+=1
-        if(i==10):
-            break
-    if(iha.mode=='LOITER'):
-        time.sleep(30)
-    iha.mode='GUIDED'
 
 def belli_noktadan_uzaklik(coord,uzaklik, direction):
     belli_noktadan_uzaklik = distance.distance(meters=uzaklik).destination((coord),bearing=direction)
@@ -85,7 +54,7 @@ konum_array=[[iha.location.global_relative_frame.lat,iha.location.global_relativ
 def harf_ciz(array,sayac,nozzle):
         test_array = []
         if(array[0]!=0 and array[1]==0):
-            konum_yeni=belli_noktadan_uzaklik( (konum_array[sayac][0],konum_array[sayac][1]) ,array[0] ,aci)
+            konum_yeni=belli_noktadan_uzaklik( (konum_array[sayac][0],konum_array[sayac][1]),array[0],aci)
             test_array.append(konum_yeni.latitude)
             test_array.append(konum_yeni.longitude)
             test_array.append(konum_array[sayac][2])
@@ -245,7 +214,7 @@ position_array_T = [[iki_harf_arasi_bosluk,0, 0],
 
 position_array_U = [[iki_harf_arasi_bosluk,0, 0],
                     [0, font, 1],
-                    [font/2, 0, 1],
+                    [font, 0, 1],
                     [0, -font, 1]]
 
 
@@ -338,6 +307,7 @@ position_array_9 = [[iki_harf_arasi_bosluk,0, 0],
                     [-font/2,0,1],
                     [0,-font/2,1],
                     [font/2,0,0]]
+
 
 for i in yazi:
     if i == "A" or i == "a":
@@ -477,19 +447,23 @@ for i in yazi:
             harf_ciz(i,sayac,i[2])
             sayac += 1
 
-arm_ol_yuksel_ve_kontrolu_ver(takeoff)
+kodu_baslat()
 print(konum_array)
 ekstra_time=2
 def konuma_gitme():
     for i in range(1,len(konum_array)):
-        mesafe=iki_nokta_arasi_uzaklik_hesaplama_3d(konum_array[i-1],konum_array[i])
+        mesafe=iki_nokta_arasi_uzaklik_hesaplama_3d( konum_array[i-1],konum_array[i])
         print ("iki konum arasi mesafe: {}".format(mesafe))
         print ("Belirtilen konuma gidiyorum...")
         konum=LocationGlobalRelative(konum_array[i][0],konum_array[i][1],konum_array[i][2])
         if(konum_array[i][3]==1):
             nozzle_on()
+        time.sleep(1)
         iha.simple_goto(konum)
-        distance_control(konum_array[i])
+        if(konum_array[i][2]==konum_array[i][2]):
+            wait_time = math.ceil(mesafe * 100 / copter_horizontal_velocity)
+        wait_time = math.ceil(mesafe * 100 / copter_vertical_velocity)
+        time.sleep(wait_time)
         nozzle_off()
         time.sleep(ekstra_time)
         print("Belirtilen konuma ulastim.")
